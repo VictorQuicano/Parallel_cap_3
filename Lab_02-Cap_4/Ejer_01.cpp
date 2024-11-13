@@ -6,21 +6,43 @@
 #include <chrono>
 #include <vector>
 #include <random>
+
+#define NUM_INTERVALS 5
+
 using namespace std;
 using namespace std::chrono;
 
 long long int total_number;
-int thread_count;
+int thread_count = NUM_INTERVALS;
+vector<int> countArray(NUM_INTERVALS, 0);
+
 pthread_mutex_t mutex;
 
 struct ThreadArgs{
-    int rank;
-    vector<float> dates;
+    int start;
+    int end;
+    vector<float>* data;
 };
 
-void* rate_bind(void* args){
-    ThreadArgs* threadArgs = static_cast<ThreadArgs*>(args);
+void* classifyNumbers(void* arg) {
+    ThreadArgs* threadArgs = (ThreadArgs*)arg;
+    int start = threadArgs->start;
+    int end = threadArgs->end;
+    vector<float>& data = *(threadArgs->data);
+    
+    for (int i = start; i < end; i++) {
+        double num = data[i];
+        int interval = (int)num; 
+        if (interval >= 0 && interval < NUM_INTERVALS) {
+            pthread_mutex_lock(&mutex);
+            countArray[interval]++;
+            pthread_mutex_unlock(&mutex);
+        }
+    }
+
+    return NULL;
 }
+
 
 int main(int argc, char* argv[]) {
     random_device rd;
@@ -29,48 +51,38 @@ int main(int argc, char* argv[]) {
     uniform_real_distribution<> dis(0.0, 5.0);
 
     double random_number = dis(gen);
-    if (argc != 3) {
-        cerr << "Usage: " << argv[0] << " <number of threads> <number of dates>" << endl;
+    if (argc != 2) {
+        cerr << "Usage: " << argv[0] << " <number of dates>" << endl;
         return -1;
     }
 
-    thread_count = atoi(argv[1]);
-    total_number = atoll(argv[2]);
+    total_number = atoll(argv[1]);
     vector<float> numbers(total_number); 
     for (auto &p:numbers){
+        p = dis(gen);
         //Generate float randoms between 0, 5;
-        p = dis(gen); 
-        cout<<p<<endl;
+        //cout<<p<<endl;
     }
+    
+    pthread_t* threads = new pthread_t[thread_count];
+    int segment_size = total_number / thread_count;
+    ThreadArgs* threadData = new ThreadArgs[thread_count];
+
+    for (int i = 0; i < NUM_INTERVALS; i++) {
+        threadData[i].start = i * segment_size;
+        threadData[i].end = (i + 1) * segment_size;
+        threadData[i].data = &numbers;
+        pthread_create(&threads[i], NULL, classifyNumbers, (void*)&threadData[i]);
+    }
+
+    for (int i = 0; i < NUM_INTERVALS; i++) {
+        pthread_join(threads[i], NULL);
+    }
+
+    cout << "Results of number classification into intervals:" << std::endl;
+    for (int i = 0; i < NUM_INTERVALS; i++) {
+    cout << "Interval [" << i << ", " << (i + 1) << "): " << countArray[i] << " numbers" << endl;
+    }
+
     return 0;
-    //pthread_t* threads = new pthread_t[thread_count];
-    //pthread_mutex_init(&mutex, nullptr);
-//
-    //// Start measuring time
-    //auto start = high_resolution_clock::now();
-//
-    //// Create threads
-    //for (int i = 0; i < thread_count; i++) {
-    //    pthread_create(&threads[i], nullptr, perform_tosses, (void*)(long)i);
-    //}
-//
-    //// Join threads
-    //for (int i = 0; i < thread_count; i++) {
-    //    pthread_join(threads[i], nullptr);
-    //}
-//
-    //// Stop measuring time
-    //auto end = high_resolution_clock::now();
-    //duration<double> elapsed = end - start;
-//
-    //// Calculate and print pi estimate
-    ////double pi_estimate = 4 * static_cast<double>(circle_hits) / total_tosses;
-    ////cout << "Estimated Pi = " << pi_estimate << endl;
-    //cout << "Execution Time: " << elapsed.count() << " seconds" << endl;
-//
-    //// Cleanup
-    //pthread_mutex_destroy(&mutex);
-    //delete[] threads;
-//
-    //return 0;
 }
