@@ -9,5 +9,5 @@
 
 ### Ejercicios
 
-- 🛜​ [Ejercicios MPI - Cap. 3](/Lab_01-Cap_4/)
-- 🧵​ [Ejercicios PThreads - Cap. 4](/Lab_02-Cap_5/)
+- 🛜​ [Ejercicios MPI - Cap. 3](/Lab_01-Cap_3/)
+- 🧵​ [Ejercicios PThreads - Cap. 4](/Lab_02-Cap_4/)
