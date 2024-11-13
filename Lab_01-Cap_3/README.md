@@ -1,7 +1,8 @@
 # EJERCICIOS CAPÍTULO 3️⃣
 
 > How to excute the code
-> `mpic++ 'file_name'.cpp -o 'executable_file'` > `mpirin -np 'num' ./'executable_file'`
+> `mpic++ 'file_name'.cpp -o 'executable_file'`
+> `mpirin -np 'num' ./'executable_file'`
 
 ## Lista de Ejercicios
 
