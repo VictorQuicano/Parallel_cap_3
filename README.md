@@ -1,6 +1,13 @@
-# EXERCISE FROM THE BOOK OF PETER PACHECO
+# EJERCICIOS EXTRAIDOS DEL LIBRO DE PETER PACHECO
 
-## Course: Pallel Programming
+## Parallel Programming
 
-> How to excute the code
-> `mpic++ 'file_name'.cpp -o 'executable_file'` > `mpirin -np 'num' ./'executable_file'`
+### Datos Generales
+
+- Profesor: Alvaro Quispe Aliaga
+- Alumno: Victor Quicaño Miranda
+
+### Ejercicios
+
+- 🛜​ [Ejercicios MPI - Cap. 3](/Lab_01-Cap_4/)
+- 🧵​ [Ejercicios PThreads - Cap. 4](/Lab_02-Cap_5/)
